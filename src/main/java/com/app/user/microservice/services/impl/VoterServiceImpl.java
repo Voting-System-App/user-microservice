@@ -1,13 +1,16 @@
 package com.app.user.microservice.services.impl;
 
 import com.app.user.microservice.entities.Voter;
+import com.app.user.microservice.entities.models.PersonalData;
 import com.app.user.microservice.repositories.VoterRepository;
 import com.app.user.microservice.services.VoterService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -16,8 +19,16 @@ public class VoterServiceImpl implements VoterService {
 
     private final VoterRepository voterRepository;
 
-    public VoterServiceImpl(VoterRepository voterRepository) {
+    private final WebClient dniValidator;
+
+    public VoterServiceImpl(WebClient.Builder dniValidator,VoterRepository voterRepository, @Value("${reniec.validator}") String reniec) {
         this.voterRepository = voterRepository;
+        this.dniValidator = dniValidator.baseUrl(reniec).build();
+    }
+
+    private Mono<PersonalData> findDataFromDni(String dni) {
+        return dniValidator.get().uri("/dni" + dni).
+                retrieve().bodyToMono(PersonalData.class);
     }
 
     @Override
