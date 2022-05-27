@@ -3,6 +3,8 @@ package com.app.user.microservice.services.impl;
 import com.app.user.microservice.entities.Voter;
 import com.app.user.microservice.repositories.VoterRepository;
 import com.app.user.microservice.services.VoterService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +27,11 @@ public class VoterServiceImpl implements VoterService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Flux<Voter> findAllPaged(Pageable pageable) {
-        return voterRepository.findAll(pageable);
+    public Mono<Page<Voter>> findAllVotersByPage(Pageable pageable) {
+        return voterRepository.findAllBy(pageable)
+                .collectList()
+                .zipWith(voterRepository.count())
+                .map(result-> new PageImpl<>(result.getT1(),pageable, result.getT2()));
     }
 
     @Override
