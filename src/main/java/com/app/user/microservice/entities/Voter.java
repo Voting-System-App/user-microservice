@@ -1,5 +1,8 @@
 package com.app.user.microservice.entities;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Lob;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,10 +26,12 @@ public class Voter {
     private String email;
     @Size(min = 8,max =8)
     private String dni;
-    private Boolean gender;
-    private String age;
+    private String gender;
+    private String birthDate;
     @Field(name = "is_active")
-    private Boolean isActive;
+    @Enumerated(EnumType.STRING)
+    private Status isActive;
     @Field(name = "finger_print")
-    private String fingerprint;
+    @Lob
+    private String fingerPrint;
 }
