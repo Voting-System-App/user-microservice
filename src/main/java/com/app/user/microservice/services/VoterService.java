@@ -11,6 +11,6 @@ public interface VoterService {
     Flux<Voter> findAll();
     Mono<Page<Voter>> findAllVotersByPage(Pageable pageable);
     Mono<Voter> findById(String id);
-    Mono<Voter> save(Voter voter);
-    Mono<Voter> updateFingerPrint(String voterId,String fingerPrint);
+    Mono<Voter> save(Voter voter,FilePart file);
+    Mono<Voter> update(Voter voter,String id);
 }

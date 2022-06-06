@@ -2,23 +2,23 @@ package com.app.user.microservice.controllers;
 
 import com.app.user.microservice.entities.Voter;
 import com.app.user.microservice.services.VoterService;
+import com.machinezoo.sourceafis.FingerprintImage;
+import com.machinezoo.sourceafis.FingerprintImageOptions;
+import com.machinezoo.sourceafis.FingerprintMatcher;
+import com.machinezoo.sourceafis.FingerprintTemplate;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.util.Map;
-
-import static org.springframework.data.mongodb.core.query.Criteria.where;
-import static org.springframework.data.mongodb.core.query.Query.query;
-import static org.springframework.http.ResponseEntity.ok;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @RestController
 @Tag(name = "Voter Api", description = "Api for testing the endpoint for voters")
@@ -26,11 +26,8 @@ import static org.springframework.http.ResponseEntity.ok;
 public class VoterController {
     private final VoterService voterService;
 
-    private final ReactiveGridFsTemplate gridFsTemplate;
-
-    public VoterController(VoterService voterService, ReactiveGridFsTemplate gridFsTemplate) {
+    public VoterController(VoterService voterService) {
         this.voterService = voterService;
-        this.gridFsTemplate = gridFsTemplate;
     }
 
     @GetMapping
@@ -47,29 +44,35 @@ public class VoterController {
         return voterService.findById(id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/upload")
-    public Mono<ResponseEntity> upload(@RequestPart("file") Mono<FilePart> file) {
-        return file
-                .flatMap(part -> this.gridFsTemplate.store(part.content(), part.filename()))
-                .map((id) -> ok().body(Map.of("id", id.toHexString())));
-    }
-
-    @GetMapping("/read/{id}")
-    public Flux<Void> read(@PathVariable String id, ServerWebExchange exchange) {
-        return this.gridFsTemplate.findOne(query(where("_id").is(id)))
-                .log()
-                .flatMap(gridFsTemplate::getResource)
-                .flatMapMany(r -> exchange.getResponse().writeWith(r.getDownloadStream()));
+    @GetMapping("/validate")
+    public boolean read() throws IOException {
+        FingerprintTemplate probe = new FingerprintTemplate(
+                new FingerprintImage(
+                        Files.readAllBytes(Paths.get("C://Users//User//OneDrive//Documentos//GitHub//images//")
+                                .resolve("dc615ca7-0f3f-4903-8354-5d3238178164-h1.png").toAbsolutePath()),
+                        new FingerprintImageOptions()
+                                .dpi(500)));
+        FingerprintTemplate candidate = new FingerprintTemplate(
+                new FingerprintImage(
+                        Files.readAllBytes(Paths.get("C://Users//User//OneDrive//Documentos//GitHub//images//")
+                                .resolve("h2.png").toAbsolutePath()),
+                        new FingerprintImageOptions()
+                                .dpi(500)));
+        double score = new FingerprintMatcher(probe)
+                .match(candidate);
+        double threshold = 40;
+        boolean matches = score >= threshold;
+        return matches;
     }
 
     @PostMapping
-    public ResponseEntity<Mono<Voter>> saveVoter(@RequestBody Voter voter){
-        return ResponseEntity.ok(voterService.save(voter));
+    public ResponseEntity<Mono<Voter>> saveVoter(@Valid Voter voter,@RequestPart FilePart file){
+        return ResponseEntity.ok(voterService.save(voter,file));
     }
 
-    @PutMapping("/{voterId}/finger/{fingerPrint}")
-    public Mono<ResponseEntity<Voter>> updateFingerPrint(@PathVariable String voterId, @PathVariable String fingerPrint){
-        return voterService.updateFingerPrint(voterId,fingerPrint).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
+    @PutMapping("/{id}")
+    public Mono<ResponseEntity<Voter>> update(@RequestBody Voter voter ,@PathVariable String id){
+        return voterService.update(voter,id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
 }

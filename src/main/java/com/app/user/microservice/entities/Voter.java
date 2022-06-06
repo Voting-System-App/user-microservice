@@ -32,6 +32,5 @@ public class Voter {
     @Enumerated(EnumType.STRING)
     private Status isActive;
     @Field(name = "finger_print")
-    @Lob
     private String fingerPrint;
 }

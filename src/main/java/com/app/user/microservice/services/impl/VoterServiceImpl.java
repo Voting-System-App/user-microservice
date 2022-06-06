@@ -6,10 +6,14 @@ import com.app.user.microservice.services.VoterService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.io.File;
+import java.util.UUID;
 
 
 @Service
@@ -43,16 +47,24 @@ public class VoterServiceImpl implements VoterService {
 
     @Override
     @Transactional
-    public Mono<Voter> save(Voter voter){
-        return voterRepository.save(voter);
+    public Mono<Voter> save(Voter voter, FilePart file){
+        voter.setFingerPrint(UUID.randomUUID().toString() + "-" + file.filename()
+                .replace(" ","")
+                .replace(":","")
+                .replace("\\",""));
+        return file.transferTo(new File("C://Users//User//OneDrive//Documentos//GitHub//images//"+ voter.getFingerPrint())).then(voterRepository.save(voter));
     }
 
     @Override
-    public Mono<Voter> updateFingerPrint(String voterId, String fingerPrint) {
-        return voterRepository.findById(voterId).flatMap(result->{
-            result.setFingerPrint(fingerPrint);
+    @Transactional
+    public Mono<Voter> update(Voter voter, String id) {
+        return voterRepository.findById(id).flatMap(result->{
+            result.setName(voter.getName());
+            result.setLastName(voter.getLastName());
+            result.setEmail(voter.getEmail());
+            result.setDni(voter.getDni());
+            result.setGender(voter.getGender());
             return voterRepository.save(result);
         });
     }
-
 }
