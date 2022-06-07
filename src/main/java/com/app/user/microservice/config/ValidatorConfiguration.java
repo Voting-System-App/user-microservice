@@ -18,7 +18,6 @@ public class ValidatorConfiguration {
     public LocalValidatorFactoryBean validator() {
         return new LocalValidatorFactoryBean();
     }
-
     @Bean
     public ReactiveGridFsTemplate reactiveGridFsTemplate(
             ReactiveMongoDatabaseFactory databaseFactory,

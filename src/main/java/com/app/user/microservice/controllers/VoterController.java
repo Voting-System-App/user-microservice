@@ -2,11 +2,8 @@ package com.app.user.microservice.controllers;
 
 import com.app.user.microservice.entities.Voter;
 import com.app.user.microservice.services.VoterService;
-import com.machinezoo.sourceafis.FingerprintImage;
-import com.machinezoo.sourceafis.FingerprintImageOptions;
-import com.machinezoo.sourceafis.FingerprintMatcher;
-import com.machinezoo.sourceafis.FingerprintTemplate;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -16,18 +13,20 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.UUID;
 
 @RestController
 @Tag(name = "Voter Api", description = "Api for testing the endpoint for voters")
 @RequestMapping("/voter")
 public class VoterController {
     private final VoterService voterService;
+    private final String tempDirectory;
 
-    public VoterController(VoterService voterService) {
+    public VoterController(VoterService voterService,@Value("${config.upload.temp}") String tempDirectory) {
         this.voterService = voterService;
+        this.tempDirectory = tempDirectory;
     }
 
     @GetMapping
@@ -43,26 +42,17 @@ public class VoterController {
     public Mono<ResponseEntity<Voter>> findById(@PathVariable String id){
         return voterService.findById(id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
-
     @GetMapping("/validate")
-    public boolean read() throws IOException {
-        FingerprintTemplate probe = new FingerprintTemplate(
-                new FingerprintImage(
-                        Files.readAllBytes(Paths.get("C://Users//User//OneDrive//Documentos//GitHub//images//")
-                                .resolve("dc615ca7-0f3f-4903-8354-5d3238178164-h1.png").toAbsolutePath()),
-                        new FingerprintImageOptions()
-                                .dpi(500)));
-        FingerprintTemplate candidate = new FingerprintTemplate(
-                new FingerprintImage(
-                        Files.readAllBytes(Paths.get("C://Users//User//OneDrive//Documentos//GitHub//images//")
-                                .resolve("h2.png").toAbsolutePath()),
-                        new FingerprintImageOptions()
-                                .dpi(500)));
-        double score = new FingerprintMatcher(probe)
-                .match(candidate);
-        double threshold = 40;
-        boolean matches = score >= threshold;
-        return matches;
+    private Mono<Boolean> validate(@RequestPart String path,@RequestPart String tempPath) throws IOException{
+        return voterService.validate(path,tempPath);
+    }
+    @PostMapping("/saveTemp")
+    public Mono<String> saveTemporalFinderPrint(@RequestPart FilePart file) {
+        String tempPath = UUID.randomUUID() + "-" + file.filename()
+                .replace(" ","")
+                .replace(":","")
+                .replace("\\","");
+        return file.transferTo(new File(tempDirectory+tempPath)).thenReturn(tempPath);
     }
 
     @PostMapping
