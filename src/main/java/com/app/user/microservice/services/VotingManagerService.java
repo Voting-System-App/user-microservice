@@ -7,6 +7,6 @@ import reactor.core.publisher.Mono;
 public interface VotingManagerService {
     Flux<VotingManager> findAll();
     Mono<VotingManager> findById(String id);
-    Mono<VotingManager> save();
+    Mono<VotingManager> save(VotingManager manager);
     Mono<VotingManager> update(VotingManager manager,String id);
 }
