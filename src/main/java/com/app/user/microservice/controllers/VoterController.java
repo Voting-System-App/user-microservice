@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,7 +29,6 @@ public class VoterController {
         this.voterService = voterService;
         this.tempDirectory = tempDirectory;
     }
-
     @GetMapping
     public ResponseEntity<Flux<Voter>> findAll(){
         Flux<Voter> voters = voterService.findAll();

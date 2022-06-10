@@ -4,6 +4,7 @@ import com.app.user.microservice.entities.User;
 import reactor.core.publisher.Mono;
 
 public interface UserService {
+    Mono<User> findByUsername(String username);
     Mono<User> save(User user);
     Mono<User> update(User user,String id);
 }

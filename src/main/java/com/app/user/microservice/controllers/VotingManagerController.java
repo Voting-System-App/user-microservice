@@ -1,9 +1,11 @@
 package com.app.user.microservice.controllers;
 
 import com.app.user.microservice.entities.VotingManager;
+import com.app.user.microservice.entities.authentication.Message;
 import com.app.user.microservice.services.VotingManagerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,11 +21,12 @@ public class VotingManagerController {
         this.votingManagerService = votingManagerService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<Flux<VotingManager>> findAll(){
-        Flux<VotingManager> votingManager = votingManagerService.findAll();
-        return ResponseEntity.ok(votingManager);
+    public Flux<VotingManager> findAll(){
+        return votingManagerService.findAll();
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public Mono<ResponseEntity<VotingManager>> findById(@PathVariable String id){
         return votingManagerService.findById(id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
