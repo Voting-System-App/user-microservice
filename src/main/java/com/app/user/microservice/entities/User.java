@@ -24,7 +24,7 @@ public class User implements Serializable {
     private String username;
     @NotEmpty
     private String password;
-    private String enabled;
+    private Boolean enabled;
     @Email
     private String email;
     @ManyToMany(fetch = FetchType.LAZY)
