@@ -37,7 +37,6 @@ public class VoterServiceImpl implements VoterService {
         this.directory = directory;
         this.tempDirectory = tempDirectory;
     }
-
     @Override
     @Transactional(readOnly = true)
     public Flux<Voter> findAll() {
