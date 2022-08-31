@@ -1,6 +1,8 @@
 package com.app.user.microservice.services.impl;
 
 import com.app.user.microservice.entities.Voter;
+import com.app.user.microservice.entities.models.VotingDate;
+import com.app.user.microservice.entities.models.VotingGroup;
 import com.app.user.microservice.repositories.VoterRepository;
 import com.app.user.microservice.services.VoterService;
 import com.machinezoo.sourceafis.FingerprintImage;
@@ -12,15 +14,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.UUID;
 
 
@@ -31,12 +37,17 @@ public class VoterServiceImpl implements VoterService {
 
     private final String directory;
     private final String tempDirectory;
+    private final WebClient webClientElectronicVote;
 
-    public VoterServiceImpl(VoterRepository voterRepository, @Value("${config.upload}") String directory,@Value("${config.upload.temp}") String tempDirectory) {
+    public VoterServiceImpl(VoterRepository voterRepository, @Value("${config.upload}") String directory,
+                            @Value("${config.upload.temp}") String tempDirectory, WebClient.Builder webClientElectronicVote,
+                            @Value("${electronic.vote}") String electronicVote){
         this.voterRepository = voterRepository;
         this.directory = directory;
         this.tempDirectory = tempDirectory;
+        this.webClientElectronicVote = webClientElectronicVote.baseUrl(electronicVote).build();
     }
+
     @Override
     @Transactional(readOnly = true)
     public Flux<Voter> findAll() {
@@ -98,4 +109,16 @@ public class VoterServiceImpl implements VoterService {
         boolean matches = score >= threshold;
         return Mono.just(matches);
     }
+    /*
+    @Scheduled(fixedRate = 3000)
+    public void updateVotingGroup(){
+        LocalDate localDate = LocalDate.now();
+        .findByVotingDate_Date(Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()))
+        votingGroupRepository.findById("630ba5fe42c47860cb8f4729").flatMap(result->{
+                    result.setIsActive(true);
+                    return votingGroupRepository.save(result);
+                }).subscribeOn(Schedulers.immediate())
+                .subscribe();
+        System.out.println(localDate);
+    }*/
 }

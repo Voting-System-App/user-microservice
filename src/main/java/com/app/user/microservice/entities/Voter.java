@@ -1,5 +1,6 @@
 package com.app.user.microservice.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Data;
@@ -10,6 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 @Document(collection = "voter")
 @Data
@@ -32,4 +35,6 @@ public class Voter {
     private Status isActive;
     @Field(name = "finger_print")
     private String fingerPrint;
+    @JsonIgnore
+    private List<String> groupsId = new ArrayList<>();
 }

@@ -1,7 +1,10 @@
 package com.app.user.microservice.controllers;
 
+import com.app.user.microservice.entities.Voter;
 import com.app.user.microservice.entities.VotingManager;
 import com.app.user.microservice.entities.authentication.Message;
+import com.app.user.microservice.entities.models.VotingDate;
+import com.app.user.microservice.entities.models.VotingGroup;
 import com.app.user.microservice.services.VotingManagerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -33,12 +36,17 @@ public class VotingManagerController {
     }
 
     @PostMapping
-    public ResponseEntity<Mono<VotingManager>> saveVoter(@RequestBody VotingManager manager){
+    public ResponseEntity<Mono<VotingManager>> saveManager(@RequestBody VotingManager manager){
         return ResponseEntity.ok(votingManagerService.save(manager));
     }
 
+    @PostMapping("/date")
+    public ResponseEntity<Mono<String>> saveDateByGroups(@RequestBody VotingDate date){
+        return ResponseEntity.ok(votingManagerService.assignVotingGroup(date));
+    }
+
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<VotingManager>> update(@RequestBody VotingManager manager,@PathVariable String id){
+    public Mono<ResponseEntity<VotingManager>> updateManager(@RequestBody VotingManager manager,@PathVariable String id){
         return votingManagerService.update(manager,id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 

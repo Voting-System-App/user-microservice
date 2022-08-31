@@ -9,4 +9,5 @@ import reactor.core.publisher.Flux;
 @Repository
 public interface VoterRepository extends ReactiveMongoRepository<Voter,String> {
     Flux<Voter> findAllBy(Pageable pageable);
+    Flux<Voter> findAllByDniEndingWith(String lastNumber);
 }
