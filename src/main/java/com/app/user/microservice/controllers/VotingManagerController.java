@@ -9,6 +9,7 @@ import com.app.user.microservice.services.VotingManagerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -43,6 +44,11 @@ public class VotingManagerController {
     @PostMapping("/date")
     public ResponseEntity<Mono<String>> saveDateByGroups(@RequestBody VotingDate date){
         return ResponseEntity.ok(votingManagerService.assignVotingGroup(date));
+    }
+
+    @PutMapping("/date/{id}")
+    public Mono<ResponseEntity<VotingDate>> saveDateByGroups(@RequestBody VotingDate date,@PathVariable String id){
+        return votingManagerService.updateVotingDate(date,id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")

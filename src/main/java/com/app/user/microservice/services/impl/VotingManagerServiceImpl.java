@@ -32,6 +32,12 @@ public class VotingManagerServiceImpl implements VotingManagerService {
                 body(Mono.just(votingDate), VotingDate.class).
                 retrieve().bodyToFlux(VotingGroup.class);
     }
+
+    private Mono<VotingDate> updateDate(VotingDate votingDate,String id) {
+        return webClientElectronicVote.put().uri("/date/" + id).
+                body(Mono.just(votingDate), VotingDate.class).
+                retrieve().bodyToMono(VotingDate.class);
+    }
     private Flux<Voter> assignGroupIdToVoter(VotingGroup result){
         if(result.getName().equals("A")){
             return voterRepository.findAllByDniEndingWith("1").flatMap(object->{
@@ -111,6 +117,12 @@ public class VotingManagerServiceImpl implements VotingManagerService {
     public Mono<String> assignVotingGroup(VotingDate date) {
         return createDateAndGroups(date).flatMap(this::assignGroupIdToVoter).then(Mono.just("Group updated"));
     }
+
+    @Override
+    public Mono<VotingDate> updateVotingDate(VotingDate date, String id) {
+        return updateDate(date,id);
+    }
+
 
     @Override
     public Mono<VotingManager> update(VotingManager manager, String id) {

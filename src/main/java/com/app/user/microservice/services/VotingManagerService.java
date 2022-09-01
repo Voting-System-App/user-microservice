@@ -10,5 +10,6 @@ public interface VotingManagerService {
     Mono<VotingManager> findById(String id);
     Mono<VotingManager> save(VotingManager manager);
     Mono<String> assignVotingGroup(VotingDate date);
+    Mono<VotingDate> updateVotingDate(VotingDate date, String id);
     Mono<VotingManager> update(VotingManager manager,String id);
 }
