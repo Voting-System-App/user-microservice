@@ -2,6 +2,7 @@ package com.app.user.microservice.services.impl;
 
 import com.app.user.microservice.entities.Voter;
 import com.app.user.microservice.entities.VotingManager;
+import com.app.user.microservice.entities.models.Voting;
 import com.app.user.microservice.entities.models.VotingDate;
 import com.app.user.microservice.entities.models.VotingGroup;
 import com.app.user.microservice.repositories.VoterRepository;
@@ -33,6 +34,20 @@ public class VotingManagerServiceImpl implements VotingManagerService {
                 retrieve().bodyToFlux(VotingGroup.class);
     }
 
+    private Mono<Voting> createVoting(Voting voting) {
+        return webClientElectronicVote.post().uri("/voting").
+                body(Mono.just(voting), Voting.class).
+                retrieve().bodyToMono(Voting.class);
+    }
+    private Mono<Voting> updateVoting(Voting voting,String id) {
+        return webClientElectronicVote.put().uri("/voting/" + id).
+                body(Mono.just(voting), Voting.class).
+                retrieve().bodyToMono(Voting.class);
+    }
+    private Mono<Voting> deleteVoting(Voting voting,String id) {
+        return webClientElectronicVote.delete().uri("/voting/" + id).
+                retrieve().bodyToMono(Voting.class);
+    }
     private Mono<VotingDate> updateDate(VotingDate votingDate,String id) {
         return webClientElectronicVote.put().uri("/date/" + id).
                 body(Mono.just(votingDate), VotingDate.class).
@@ -114,8 +129,8 @@ public class VotingManagerServiceImpl implements VotingManagerService {
     }
 
     @Override
-    public Mono<String> assignVotingGroup(VotingDate date) {
-        return createDateAndGroups(date).flatMap(this::assignGroupIdToVoter).then(Mono.just("Group updated"));
+    public Mono<Voting> assignVotingGroup(Voting voting) {
+        return createDateAndGroups(voting.getVotingDate()).flatMap(this::assignGroupIdToVoter).then(createVoting(voting));
     }
 
     @Override

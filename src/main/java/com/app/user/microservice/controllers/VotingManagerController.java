@@ -3,6 +3,7 @@ package com.app.user.microservice.controllers;
 import com.app.user.microservice.entities.Voter;
 import com.app.user.microservice.entities.VotingManager;
 import com.app.user.microservice.entities.authentication.Message;
+import com.app.user.microservice.entities.models.Voting;
 import com.app.user.microservice.entities.models.VotingDate;
 import com.app.user.microservice.entities.models.VotingGroup;
 import com.app.user.microservice.services.VotingManagerService;
@@ -42,12 +43,12 @@ public class VotingManagerController {
     }
 
     @PostMapping("/date")
-    public ResponseEntity<Mono<String>> saveDateByGroups(@RequestBody VotingDate date){
-        return ResponseEntity.ok(votingManagerService.assignVotingGroup(date));
+    public ResponseEntity<Mono<Voting>> saveDateByGroups(@RequestBody Voting voting){
+        return ResponseEntity.ok(votingManagerService.assignVotingGroup(voting));
     }
 
     @PutMapping("/date/{id}")
-    public Mono<ResponseEntity<VotingDate>> saveDateByGroups(@RequestBody VotingDate date,@PathVariable String id){
+    public Mono<ResponseEntity<VotingDate>> updateDateByGroups(@RequestBody VotingDate date,@PathVariable String id){
         return votingManagerService.updateVotingDate(date,id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 

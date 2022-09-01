@@ -35,6 +35,5 @@ public class Voter {
     private Status isActive;
     @Field(name = "finger_print")
     private String fingerPrint;
-    @JsonIgnore
     private List<String> groupsId = new ArrayList<>();
 }
