@@ -11,4 +11,5 @@ public class Voting {
     @Enumerated(EnumType.STRING)
     private VotingStatus votingStatus;
     private VotingDate votingDate;
+    private Boolean isActive;
 }

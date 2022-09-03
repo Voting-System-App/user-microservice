@@ -33,7 +33,7 @@ public class VoterController {
         Flux<Voter> voters = voterService.findAll();
         return ResponseEntity.ok(voters);
     }
-    @GetMapping("all")
+    @GetMapping("/all")
     public Mono<Page<Voter>> findAllByPage(@RequestParam("page") int page, @RequestParam("size") int size){
         return voterService.findAllVotersByPage(PageRequest.of(page, size));
     }

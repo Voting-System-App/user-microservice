@@ -43,7 +43,7 @@ public class VotingManagerController {
     }
 
     @PostMapping("/date")
-    public ResponseEntity<Mono<Voting>> saveDateByGroups(@RequestBody Voting voting){
+    public ResponseEntity<Mono<Voting>> saveVotingDateByGroups(@RequestBody Voting voting){
         return ResponseEntity.ok(votingManagerService.assignVotingGroup(voting));
     }
 
@@ -57,4 +57,13 @@ public class VotingManagerController {
         return votingManagerService.update(manager,id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/voting/{id}")
+    public Mono<ResponseEntity<Voting>> updateVoting(@RequestBody Voting voting,@PathVariable String id){
+        return votingManagerService.updateVotingTask(voting,id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/voting/{id}")
+    public Mono<ResponseEntity<Void>> deleteVoting(@PathVariable String id){
+        return votingManagerService.deleteVotingTask(id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
+    }
 }

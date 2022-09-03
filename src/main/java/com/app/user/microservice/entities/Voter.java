@@ -1,8 +1,10 @@
 package com.app.user.microservice.entities;
 
+import com.app.user.microservice.entities.models.VotingGroup;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -35,5 +37,5 @@ public class Voter {
     private Status isActive;
     @Field(name = "finger_print")
     private String fingerPrint;
-    private List<String> groupsId = new ArrayList<>();
+    private List<String> groupList = new ArrayList<>();
 }

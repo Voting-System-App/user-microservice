@@ -1,10 +1,9 @@
 package com.app.user.microservice.services.impl;
 
 import com.app.user.microservice.entities.Voter;
-import com.app.user.microservice.entities.models.VotingDate;
-import com.app.user.microservice.entities.models.VotingGroup;
 import com.app.user.microservice.repositories.VoterRepository;
 import com.app.user.microservice.services.VoterService;
+import com.app.user.microservice.utils.DateComparison;
 import com.machinezoo.sourceafis.FingerprintImage;
 import com.machinezoo.sourceafis.FingerprintImageOptions;
 import com.machinezoo.sourceafis.FingerprintMatcher;
@@ -20,29 +19,32 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.UUID;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 
 @Service
 public class VoterServiceImpl implements VoterService {
 
     private final VoterRepository voterRepository;
-
+    private final DateComparison dateTime;
     private final String directory;
     private final String tempDirectory;
     private final WebClient webClientElectronicVote;
 
-    public VoterServiceImpl(VoterRepository voterRepository, @Value("${config.upload}") String directory,
+    public VoterServiceImpl(VoterRepository voterRepository, DateComparison dateTime, @Value("${config.upload}") String directory,
                             @Value("${config.upload.temp}") String tempDirectory, WebClient.Builder webClientElectronicVote,
                             @Value("${electronic.vote}") String electronicVote){
         this.voterRepository = voterRepository;
+        this.dateTime = dateTime;
         this.directory = directory;
         this.tempDirectory = tempDirectory;
         this.webClientElectronicVote = webClientElectronicVote.baseUrl(electronicVote).build();
@@ -109,16 +111,13 @@ public class VoterServiceImpl implements VoterService {
         boolean matches = score >= threshold;
         return Mono.just(matches);
     }
-    /*
     @Scheduled(fixedRate = 3000)
     public void updateVotingGroup(){
-        LocalDate localDate = LocalDate.now();
-        .findByVotingDate_Date(Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()))
-        votingGroupRepository.findById("630ba5fe42c47860cb8f4729").flatMap(result->{
-                    result.setIsActive(true);
-                    return votingGroupRepository.save(result);
-                }).subscribeOn(Schedulers.immediate())
-                .subscribe();
-        System.out.println(localDate);
-    }*/
+        LocalDate date = LocalDate.now(ZoneId.of("America/Lima"));
+        LocalTime time = LocalTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        System.out.println(date);
+        System.out.println(time.format(formatter));
+        System.out.println(dateTime.compareHours(time));
+    }
 }

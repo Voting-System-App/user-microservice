@@ -44,9 +44,9 @@ public class VotingManagerServiceImpl implements VotingManagerService {
                 body(Mono.just(voting), Voting.class).
                 retrieve().bodyToMono(Voting.class);
     }
-    private Mono<Voting> deleteVoting(Voting voting,String id) {
+    private Mono<Void> deleteVoting(String id) {
         return webClientElectronicVote.delete().uri("/voting/" + id).
-                retrieve().bodyToMono(Voting.class);
+                retrieve().bodyToMono(Void.class);
     }
     private Mono<VotingDate> updateDate(VotingDate votingDate,String id) {
         return webClientElectronicVote.put().uri("/date/" + id).
@@ -56,60 +56,60 @@ public class VotingManagerServiceImpl implements VotingManagerService {
     private Flux<Voter> assignGroupIdToVoter(VotingGroup result){
         if(result.getName().equals("A")){
             return voterRepository.findAllByDniEndingWith("1").flatMap(object->{
-                object.getGroupsId().add(result.getId());
+                object.getGroupList().add(result.getId());
                 return voterRepository.save(object);
             });
         }
         if(result.getName().equals("B")){
             return voterRepository.findAllByDniEndingWith("2").flatMap(object->{
-                object.getGroupsId().add(result.getId());
+                object.getGroupList().add(result.getId());
                 return voterRepository.save(object);
             });
         }
         if(result.getName().equals("C")){
             return voterRepository.findAllByDniEndingWith("3").flatMap(object->{
-                object.getGroupsId().add(result.getId());
+                object.getGroupList().add(result.getId());
                 return voterRepository.save(object);
             });
         }
         if(result.getName().equals("D")){
             return voterRepository.findAllByDniEndingWith("4").flatMap(object->{
-                object.getGroupsId().add(result.getId());
+                object.getGroupList().add(result.getId());
                 return voterRepository.save(object);
             });
         }
         if(result.getName().equals("E")){
             return voterRepository.findAllByDniEndingWith("5").flatMap(object->{
-                object.getGroupsId().add(result.getId());
+                object.getGroupList().add(result.getId());
                 return voterRepository.save(object);
             });
         }
         if(result.getName().equals("F")){
             return voterRepository.findAllByDniEndingWith("6").flatMap(object->{
-                object.getGroupsId().add(result.getId());
+                object.getGroupList().add(result.getId());
                 return voterRepository.save(object);
             });
         }
         if(result.getName().equals("G")){
             return voterRepository.findAllByDniEndingWith("7").flatMap(object->{
-                object.getGroupsId().add(result.getId());
+                object.getGroupList().add(result.getId());
                 return voterRepository.save(object);
             });
         }
         if(result.getName().equals("H")){
             return voterRepository.findAllByDniEndingWith("8").flatMap(object->{
-                object.getGroupsId().add(result.getId());
+                object.getGroupList().add(result.getId());
                 return voterRepository.save(object);
             });
         }
         if(result.getName().equals("I")){
             return voterRepository.findAllByDniEndingWith("9").flatMap(object->{
-                object.getGroupsId().add(result.getId());
+                object.getGroupList().add(result.getId());
                 return voterRepository.save(object);
             });
         }
         return voterRepository.findAllByDniEndingWith("0").flatMap(object->{
-            object.getGroupsId().add(result.getId());
+            object.getGroupList().add(result.getId());
             return voterRepository.save(object);
         });
     }
@@ -136,6 +136,16 @@ public class VotingManagerServiceImpl implements VotingManagerService {
     @Override
     public Mono<VotingDate> updateVotingDate(VotingDate date, String id) {
         return updateDate(date,id);
+    }
+
+    @Override
+    public Mono<Voting> updateVotingTask(Voting voting, String id) {
+        return updateVoting(voting,id);
+    }
+
+    @Override
+    public Mono<Void> deleteVotingTask(String id) {
+        return deleteVoting(id);
     }
 
 

@@ -12,5 +12,7 @@ public interface VotingManagerService {
     Mono<VotingManager> save(VotingManager manager);
     Mono<Voting> assignVotingGroup(Voting voting);
     Mono<VotingDate> updateVotingDate(VotingDate date, String id);
+    Mono<Voting> updateVotingTask(Voting voting, String id);
+    Mono<Void> deleteVotingTask(String id);
     Mono<VotingManager> update(VotingManager manager,String id);
 }

@@ -36,6 +36,7 @@ public class WebSecurityConfig {
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
                 .pathMatchers("/user/**").permitAll()
                 .pathMatchers("/voter/**").permitAll()
+                .pathMatchers("/manager/**").permitAll()
                 .anyExchange().authenticated()
                 .and().build();
     }
