@@ -1,5 +1,6 @@
 package com.app.user.microservice.entities.models;
 
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Data

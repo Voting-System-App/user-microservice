@@ -1,15 +1,15 @@
 package com.app.user.microservice.entities.models;
 
+import com.app.user.microservice.entities.Voter;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class VotingDetail {
-    @Id
     private String id;
-    private List<String> candidateId= new ArrayList<>();
+    private Voter voter;
+    private List<Candidate> candidateId= new ArrayList<>();
     private Voting voting;
 }

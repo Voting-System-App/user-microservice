@@ -1,6 +1,7 @@
 package com.app.user.microservice.services;
 
 import com.app.user.microservice.entities.Voter;
+import com.app.user.microservice.entities.models.VotingDetail;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.multipart.FilePart;
@@ -14,6 +15,7 @@ public interface VoterService {
     Mono<Page<Voter>> findAllVotersByPage(Pageable pageable);
     Mono<Voter> findById(String id);
     Mono<Voter> save(Voter voter,FilePart file);
+    Mono<VotingDetail> saveElectoralVote(VotingDetail votingDetail);
     Mono<Voter> update(Voter voter,String id);
     Mono<Boolean> validate(String path,String tempPath) throws IOException;
 }

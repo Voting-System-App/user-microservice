@@ -27,13 +27,31 @@ public class VotingManagerServiceImpl implements VotingManagerService {
         this.voterRepository = voterRepository;
         this.webClientElectronicVote = webClientElectronicVote.baseUrl(electronicVote).build();
     }
-
+    private Flux<Voting> findAllVoting() {
+        return webClientElectronicVote.get().uri("/voting").
+                retrieve().bodyToFlux(Voting.class);
+    }
     private Flux<VotingGroup> createDateAndGroups(VotingDate votingDate) {
         return webClientElectronicVote.post().uri("/date").
                 body(Mono.just(votingDate), VotingDate.class).
                 retrieve().bodyToFlux(VotingGroup.class);
     }
-
+    private Mono<Long> findAllByElectoralVotingId(String id) {
+        return webClientElectronicVote.get().uri("/graphic/electoral/voting/"+id).
+                retrieve().bodyToMono(Long.class);
+    }
+    private Mono<Long> findAllByCandidateId(String id) {
+        return webClientElectronicVote.get().uri("/graphic/candidate/"+id).
+                retrieve().bodyToMono(Long.class);
+    }
+    private Mono<Long> findAllByPoliticalParty(String id) {
+        return webClientElectronicVote.get().uri("/graphic/political/party/"+id).
+                retrieve().bodyToMono(Long.class);
+    }
+    private Mono<Long> findAllByCityName(String name) {
+        return webClientElectronicVote.get().uri("/graphic/state/"+name).
+                retrieve().bodyToMono(Long.class);
+    }
     private Mono<Voting> createVoting(Voting voting) {
         return webClientElectronicVote.post().uri("/voting").
                 body(Mono.just(voting), Voting.class).
@@ -44,9 +62,9 @@ public class VotingManagerServiceImpl implements VotingManagerService {
                 body(Mono.just(voting), Voting.class).
                 retrieve().bodyToMono(Voting.class);
     }
-    private Mono<Void> deleteVoting(String id) {
+    private Mono<String> deleteVoting(String id) {
         return webClientElectronicVote.delete().uri("/voting/" + id).
-                retrieve().bodyToMono(Void.class);
+                retrieve().bodyToMono(String.class);
     }
     private Mono<VotingDate> updateDate(VotingDate votingDate,String id) {
         return webClientElectronicVote.put().uri("/date/" + id).
@@ -129,8 +147,16 @@ public class VotingManagerServiceImpl implements VotingManagerService {
     }
 
     @Override
+    public Flux<Voting> findAllElectoralVoting() {
+        return findAllVoting();
+    }
+
+    @Override
     public Mono<Voting> assignVotingGroup(Voting voting) {
-        return createDateAndGroups(voting.getVotingDate()).flatMap(this::assignGroupIdToVoter).then(createVoting(voting));
+        return createDateAndGroups(voting.getVotingDate()).flatMap(result->{
+            voting.setVotingDate(result.getVotingDate());
+            return assignGroupIdToVoter(result);
+        }).then(createVoting(voting));
     }
 
     @Override
@@ -144,7 +170,7 @@ public class VotingManagerServiceImpl implements VotingManagerService {
     }
 
     @Override
-    public Mono<Void> deleteVotingTask(String id) {
+    public Mono<String> deleteVotingTask(String id) {
         return deleteVoting(id);
     }
 
@@ -159,5 +185,25 @@ public class VotingManagerServiceImpl implements VotingManagerService {
             result.setGender(manager.getGender());
             return votingManagerRepository.save(result);
         });
+    }
+
+    @Override
+    public Mono<Long> findAllByCandidateListId(String id) {
+        return findAllByCandidateId(id);
+    }
+
+    @Override
+    public Mono<Long> findAllByCandidateListPoliticalPartyId(String id) {
+        return findAllByPoliticalParty(id);
+    }
+
+    @Override
+    public Mono<Long> findAllByVoterCityStateName(String name) {
+        return findAllByCityName(name);
+    }
+
+    @Override
+    public Mono<Long> findAllByVotingId(String id) {
+        return findAllByElectoralVotingId(id);
     }
 }

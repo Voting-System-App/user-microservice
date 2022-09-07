@@ -31,9 +31,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Mono<User> save(User user) {
+    public Mono<User> save(User user,Role role) {
         user.setEnabled(true);
-        user.setRoles(List.of(Role.ROLE_ADMIN));
+        user.setRoles(List.of(role));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }

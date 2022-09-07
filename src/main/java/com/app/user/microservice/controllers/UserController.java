@@ -2,6 +2,7 @@ package com.app.user.microservice.controllers;
 
 import com.app.user.microservice.config.security.JWTUtil;
 import com.app.user.microservice.config.security.PBKDF2Encoder;
+import com.app.user.microservice.entities.Role;
 import com.app.user.microservice.entities.User;
 import com.app.user.microservice.entities.authentication.AuthRequest;
 import com.app.user.microservice.entities.authentication.AuthResponse;
@@ -9,10 +10,7 @@ import com.app.user.microservice.services.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -29,9 +27,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
-    public ResponseEntity<Mono<User>> saveVoter(@RequestBody User user){
-        return ResponseEntity.ok(userService.save(user));
+    @PostMapping("/{role}")
+    public ResponseEntity<Mono<User>> saveVoter(@RequestBody User user, @PathVariable Role role){
+        return ResponseEntity.ok(userService.save(user,role));
     }
 
     @PostMapping("/login")

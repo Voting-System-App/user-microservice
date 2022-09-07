@@ -1,6 +1,7 @@
 package com.app.user.microservice.controllers;
 
 import com.app.user.microservice.entities.Voter;
+import com.app.user.microservice.entities.models.VotingDetail;
 import com.app.user.microservice.services.VoterService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,6 +59,10 @@ public class VoterController {
         return ResponseEntity.ok(voterService.save(voter,file));
     }
 
+    @PostMapping("/vote")
+    public ResponseEntity<Mono<VotingDetail>> saveVote(@RequestBody VotingDetail votingDetail){
+        return ResponseEntity.ok(voterService.saveElectoralVote(votingDetail));
+    }
     @PutMapping("/{id}")
     public Mono<ResponseEntity<Voter>> update(@RequestBody Voter voter ,@PathVariable String id){
         return voterService.update(voter,id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());

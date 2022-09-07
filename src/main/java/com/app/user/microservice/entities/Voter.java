@@ -1,7 +1,7 @@
 package com.app.user.microservice.entities;
 
+
 import com.app.user.microservice.entities.models.VotingGroup;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
@@ -37,5 +37,7 @@ public class Voter {
     private Status isActive;
     @Field(name = "finger_print")
     private String fingerPrint;
+    @ManyToOne
+    private City city;
     private List<String> groupList = new ArrayList<>();
 }

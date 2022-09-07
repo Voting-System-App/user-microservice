@@ -1,13 +1,16 @@
 package com.app.user.microservice.services.impl;
 
 import com.app.user.microservice.entities.Voter;
+import com.app.user.microservice.entities.models.VotingDate;
+import com.app.user.microservice.entities.models.VotingDetail;
+import com.app.user.microservice.entities.models.VotingGroup;
 import com.app.user.microservice.repositories.VoterRepository;
 import com.app.user.microservice.services.VoterService;
-import com.app.user.microservice.utils.DateComparison;
 import com.machinezoo.sourceafis.FingerprintImage;
 import com.machinezoo.sourceafis.FingerprintImageOptions;
 import com.machinezoo.sourceafis.FingerprintMatcher;
 import com.machinezoo.sourceafis.FingerprintTemplate;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -24,10 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -35,21 +34,23 @@ import java.util.*;
 public class VoterServiceImpl implements VoterService {
 
     private final VoterRepository voterRepository;
-    private final DateComparison dateTime;
     private final String directory;
     private final String tempDirectory;
     private final WebClient webClientElectronicVote;
 
-    public VoterServiceImpl(VoterRepository voterRepository, DateComparison dateTime, @Value("${config.upload}") String directory,
+    public VoterServiceImpl(VoterRepository voterRepository, @Value("${config.upload}") String directory,
                             @Value("${config.upload.temp}") String tempDirectory, WebClient.Builder webClientElectronicVote,
                             @Value("${electronic.vote}") String electronicVote){
         this.voterRepository = voterRepository;
-        this.dateTime = dateTime;
         this.directory = directory;
         this.tempDirectory = tempDirectory;
         this.webClientElectronicVote = webClientElectronicVote.baseUrl(electronicVote).build();
     }
-
+    private Mono<VotingDetail> createElectoralVote(VotingDetail votingDetail) {
+        return webClientElectronicVote.post().uri("/vote/detail").
+                body(Mono.just(votingDetail), VotingDetail.class).
+                retrieve().bodyToMono(VotingDetail.class);
+    }
     @Override
     @Transactional(readOnly = true)
     public Flux<Voter> findAll() {
@@ -79,6 +80,12 @@ public class VoterServiceImpl implements VoterService {
                 .replace("\\",""));
         return file.transferTo(new File(directory+ voter.getFingerPrint())).then(voterRepository.save(voter));
     }
+
+    @Override
+    public Mono<VotingDetail> saveElectoralVote(VotingDetail votingDetail) {
+        return createElectoralVote(votingDetail);
+    }
+
     @Override
     @Transactional
     public Mono<Voter> update(Voter voter, String id) {
@@ -93,10 +100,11 @@ public class VoterServiceImpl implements VoterService {
     }
     @Override
     public Mono<Boolean> validate(String path, String tempPath) throws IOException {
+        byte[] byteArray = Files.readAllBytes(Paths.get(directory)
+                .resolve(path).toAbsolutePath());
         FingerprintTemplate probe = new FingerprintTemplate(
                 new FingerprintImage(
-                        Files.readAllBytes(Paths.get(directory)
-                                .resolve(path).toAbsolutePath()),
+                        byteArray,
                         new FingerprintImageOptions()
                                 .dpi(500)));
         FingerprintTemplate candidate = new FingerprintTemplate(
@@ -110,14 +118,5 @@ public class VoterServiceImpl implements VoterService {
         double threshold = 40;
         boolean matches = score >= threshold;
         return Mono.just(matches);
-    }
-    @Scheduled(fixedRate = 3000)
-    public void updateVotingGroup(){
-        LocalDate date = LocalDate.now(ZoneId.of("America/Lima"));
-        LocalTime time = LocalTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        System.out.println(date);
-        System.out.println(time.format(formatter));
-        System.out.println(dateTime.compareHours(time));
     }
 }
