@@ -41,7 +41,7 @@ public class VoterController {
         return voterService.findById(id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
     @PostMapping
-    public ResponseEntity<Mono<Voter>> saveVoter(@Valid Voter voter){
+    public ResponseEntity<Mono<Voter>> saveVoter(@RequestBody Voter voter){
         return ResponseEntity.ok(voterService.save(voter));
     }
 

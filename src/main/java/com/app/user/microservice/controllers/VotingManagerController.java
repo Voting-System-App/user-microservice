@@ -43,12 +43,7 @@ public class VotingManagerController {
     }
     @PostMapping("/voting")
     public Mono<Voting> saveVotingDateByGroups(@RequestBody Voting voting){
-        return votingManagerService.assignVotingGroup(voting);
-    }
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/voting/date/{id}")
-    public Mono<ResponseEntity<VotingDate>> updateDateByGroups(@RequestBody VotingDate date,@PathVariable String id){
-        return votingManagerService.updateVotingDate(date,id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
+        return votingManagerService.saveVoting(voting);
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
@@ -67,22 +62,22 @@ public class VotingManagerController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/graphic/electoral/voting/{id}")
-    public ResponseEntity<Mono<Long>> findAllByVotingId(@PathVariable String id){
-        return ResponseEntity.ok(votingManagerService.findAllByVotingId(id));
+    public Mono<Long> findAllByVotingId(@PathVariable String id){
+        return votingManagerService.findAllByVotingId(id);
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/graphic/candidate/{id}")
-    public ResponseEntity<Mono<Long>> findAllByCandidateId(@PathVariable String id){
-        return ResponseEntity.ok(votingManagerService.findAllByCandidateListId(id));
+    public Mono<Long> findAllByCandidateId(@PathVariable String id){
+        return votingManagerService.findAllByCandidateListId(id);
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/graphic/state/{name}")
-    public ResponseEntity<Mono<Long>> findAllByCityName(@PathVariable String name){
-        return ResponseEntity.ok(votingManagerService.findAllByVoterCityStateName(name));
+    public Mono<Long> findAllByCityName(@PathVariable String name){
+        return votingManagerService.findAllByVoterCityStateName(name);
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/graphic/political/party/{id}")
-    public ResponseEntity<Mono<Long>> findAllByPoliticalParty(@PathVariable String id){
-        return ResponseEntity.ok(votingManagerService.findAllByCandidateListPoliticalPartyId(id));
+    public Mono<Long> findAllByPoliticalParty(@PathVariable String id){
+        return votingManagerService.findAllByCandidateListPoliticalPartyId(id);
     }
 }

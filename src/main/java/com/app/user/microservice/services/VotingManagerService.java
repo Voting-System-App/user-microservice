@@ -11,8 +11,7 @@ public interface VotingManagerService {
     Mono<VotingManager> findById(String id);
     Mono<VotingManager> save(VotingManager manager);
     Flux<Voting> findAllElectoralVoting();
-    Mono<Voting> assignVotingGroup(Voting voting);
-    Mono<VotingDate> updateVotingDate(VotingDate date, String id);
+    Mono<Voting> saveVoting(Voting voting);
     Mono<Voting> updateVotingTask(Voting voting, String id);
     Mono<String> deleteVotingTask(String id);
     Mono<VotingManager> update(VotingManager manager,String id);

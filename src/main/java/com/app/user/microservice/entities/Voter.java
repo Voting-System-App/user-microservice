@@ -38,7 +38,6 @@ public class Voter {
     private Status isActive;
     @Field(name = "finger_print")
     private String fingerPrint;
-    @ManyToOne
-    private City city;
+    private String city;
     private String group;
 }

@@ -10,6 +10,6 @@ import java.util.List;
 public class VotingDetail {
     private String id;
     private Voter voter;
-    private List<Candidate> candidateId= new ArrayList<>();
+    private List<Candidate> candidateList= new ArrayList<>();
     private Voting voting;
 }

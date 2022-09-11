@@ -1,5 +1,6 @@
 package com.app.user.microservice.services.impl;
 
+import com.app.user.microservice.entities.Status;
 import com.app.user.microservice.entities.Voter;
 import com.app.user.microservice.entities.models.VotingDetail;
 import com.app.user.microservice.repositories.VoterRepository;
@@ -56,6 +57,7 @@ public class VoterServiceImpl implements VoterService {
 
     @Override
     public Mono<Voter> save(Voter voter) {
+        voter.setIsActive(Status.ACTIVE);
         voter.setGroup(groups.assignGroup(voter.getDni()));
         return voterRepository.save(voter);
     }
