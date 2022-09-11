@@ -31,10 +31,10 @@ public class VotingManagerServiceImpl implements VotingManagerService {
         return webClientElectronicVote.get().uri("/voting").
                 retrieve().bodyToFlux(Voting.class);
     }
-    private Flux<VotingGroup> createDateAndGroups(VotingDate votingDate) {
+    private Mono<VotingDate> createDateAndGroups(VotingDate votingDate) {
         return webClientElectronicVote.post().uri("/date").
                 body(Mono.just(votingDate), VotingDate.class).
-                retrieve().bodyToFlux(VotingGroup.class);
+                retrieve().bodyToMono(VotingDate.class);
     }
     private Mono<Long> findAllByElectoralVotingId(String id) {
         return webClientElectronicVote.get().uri("/graphic/electoral/voting/"+id).
@@ -71,66 +71,6 @@ public class VotingManagerServiceImpl implements VotingManagerService {
                 body(Mono.just(votingDate), VotingDate.class).
                 retrieve().bodyToMono(VotingDate.class);
     }
-    private Flux<Voter> assignGroupIdToVoter(VotingGroup result){
-        if(result.getName().equals("A")){
-            return voterRepository.findAllByDniEndingWith("1").flatMap(object->{
-                object.getGroupList().add(result.getId());
-                return voterRepository.save(object);
-            });
-        }
-        if(result.getName().equals("B")){
-            return voterRepository.findAllByDniEndingWith("2").flatMap(object->{
-                object.getGroupList().add(result.getId());
-                return voterRepository.save(object);
-            });
-        }
-        if(result.getName().equals("C")){
-            return voterRepository.findAllByDniEndingWith("3").flatMap(object->{
-                object.getGroupList().add(result.getId());
-                return voterRepository.save(object);
-            });
-        }
-        if(result.getName().equals("D")){
-            return voterRepository.findAllByDniEndingWith("4").flatMap(object->{
-                object.getGroupList().add(result.getId());
-                return voterRepository.save(object);
-            });
-        }
-        if(result.getName().equals("E")){
-            return voterRepository.findAllByDniEndingWith("5").flatMap(object->{
-                object.getGroupList().add(result.getId());
-                return voterRepository.save(object);
-            });
-        }
-        if(result.getName().equals("F")){
-            return voterRepository.findAllByDniEndingWith("6").flatMap(object->{
-                object.getGroupList().add(result.getId());
-                return voterRepository.save(object);
-            });
-        }
-        if(result.getName().equals("G")){
-            return voterRepository.findAllByDniEndingWith("7").flatMap(object->{
-                object.getGroupList().add(result.getId());
-                return voterRepository.save(object);
-            });
-        }
-        if(result.getName().equals("H")){
-            return voterRepository.findAllByDniEndingWith("8").flatMap(object->{
-                object.getGroupList().add(result.getId());
-                return voterRepository.save(object);
-            });
-        }
-        if(result.getName().equals("I")){
-            return voterRepository.findAllByDniEndingWith("9").flatMap(object->{
-                object.getGroupList().add(result.getId());
-                return voterRepository.save(object);
-            });
-        }
-        return voterRepository.findAllByDniEndingWith("0").flatMap(object->{
-            object.getGroupList().add(result.getId());
-            return voterRepository.save(object);
-        });
-    }
     @Override
     public Flux<VotingManager> findAll() {
         return votingManagerRepository.findAll();
@@ -153,10 +93,7 @@ public class VotingManagerServiceImpl implements VotingManagerService {
 
     @Override
     public Mono<Voting> assignVotingGroup(Voting voting) {
-        return createDateAndGroups(voting.getVotingDate()).flatMap(result->{
-            voting.setVotingDate(result.getVotingDate());
-            return assignGroupIdToVoter(result);
-        }).then(createVoting(voting));
+        return createDateAndGroups(voting.getVotingDate()).then(createVoting(voting));
     }
 
     @Override

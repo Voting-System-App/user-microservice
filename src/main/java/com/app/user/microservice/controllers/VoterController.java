@@ -23,11 +23,9 @@ import java.util.UUID;
 @RequestMapping("/voter")
 public class VoterController {
     private final VoterService voterService;
-    private final String tempDirectory;
 
-    public VoterController(VoterService voterService,@Value("${config.upload.temp}") String tempDirectory) {
+    public VoterController(VoterService voterService) {
         this.voterService = voterService;
-        this.tempDirectory = tempDirectory;
     }
     @GetMapping
     public ResponseEntity<Flux<Voter>> findAll(){
@@ -42,21 +40,9 @@ public class VoterController {
     public Mono<ResponseEntity<Voter>> findById(@PathVariable String id){
         return voterService.findById(id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
-    @GetMapping("/validate")
-    private Mono<Boolean> validate(@RequestPart String path,@RequestPart String tempPath) throws IOException{
-        return voterService.validate(path,tempPath);
-    }
-    @PostMapping("/saveTemp")
-    public Mono<String> saveTemporalFingerPrint(@RequestPart FilePart file) {
-        String tempPath = UUID.randomUUID() + "-" + file.filename()
-                .replace(" ","")
-                .replace(":","")
-                .replace("\\","");
-        return file.transferTo(new File(tempDirectory+tempPath)).thenReturn(tempPath);
-    }
     @PostMapping
-    public ResponseEntity<Mono<Voter>> saveVoter(@Valid Voter voter,@RequestPart FilePart file){
-        return ResponseEntity.ok(voterService.save(voter,file));
+    public ResponseEntity<Mono<Voter>> saveVoter(@Valid Voter voter){
+        return ResponseEntity.ok(voterService.save(voter));
     }
 
     @PostMapping("/vote")

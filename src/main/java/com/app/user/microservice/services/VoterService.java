@@ -14,8 +14,7 @@ public interface VoterService {
     Flux<Voter> findAll();
     Mono<Page<Voter>> findAllVotersByPage(Pageable pageable);
     Mono<Voter> findById(String id);
-    Mono<Voter> save(Voter voter,FilePart file);
+    Mono<Voter> save(Voter voter);
     Mono<VotingDetail> saveElectoralVote(VotingDetail votingDetail);
     Mono<Voter> update(Voter voter,String id);
-    Mono<Boolean> validate(String path,String tempPath) throws IOException;
 }

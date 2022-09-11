@@ -27,7 +27,6 @@ public class VotingManagerController {
     public Flux<VotingManager> findAll(){
         return votingManagerService.findAll();
     }
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/voting")
     public Flux<Voting> findAllElectoralVoting(){
         return votingManagerService.findAllElectoralVoting();
@@ -42,13 +41,12 @@ public class VotingManagerController {
     public ResponseEntity<Mono<VotingManager>> saveManager(@RequestBody VotingManager manager){
         return ResponseEntity.ok(votingManagerService.save(manager));
     }
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/voting")
     public Mono<Voting> saveVotingDateByGroups(@RequestBody Voting voting){
         return votingManagerService.assignVotingGroup(voting);
     }
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/date/{id}")
+    @PutMapping("/voting/date/{id}")
     public Mono<ResponseEntity<VotingDate>> updateDateByGroups(@RequestBody VotingDate date,@PathVariable String id){
         return votingManagerService.updateVotingDate(date,id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }

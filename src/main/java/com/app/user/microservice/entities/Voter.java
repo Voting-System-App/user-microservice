@@ -2,6 +2,7 @@ package com.app.user.microservice.entities;
 
 
 import com.app.user.microservice.entities.models.VotingGroup;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
@@ -13,8 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 @Document(collection = "voter")
 @Data
@@ -31,7 +31,8 @@ public class Voter {
     @Size(min = 8,max =8)
     private String dni;
     private String gender;
-    private String birthDate;
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private Date birthDate;
     @Field(name = "is_active")
     @Enumerated(EnumType.STRING)
     private Status isActive;
@@ -39,5 +40,5 @@ public class Voter {
     private String fingerPrint;
     @ManyToOne
     private City city;
-    private List<String> groupList = new ArrayList<>();
+    private String group;
 }
