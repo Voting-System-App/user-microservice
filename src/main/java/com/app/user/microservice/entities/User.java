@@ -1,7 +1,5 @@
 package com.app.user.microservice.entities;
 
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToMany;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -12,8 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +29,7 @@ public class User implements UserDetails{
     @Email
     private String email;
     private List<Role> roles;
-    @Serial
+
     private static final long serialVersionUID = 4110570539416850727L;
     @Override
     public boolean isAccountNonExpired() {

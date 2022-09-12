@@ -9,10 +9,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.Date;
 
 public interface VoterService {
     Flux<Voter> findAll();
     Mono<Page<Voter>> findAllVotersByPage(Pageable pageable);
+    Mono<Voter> findByDniAndDate(String dni, Date birthDate,Date emissionDate);
     Mono<Voter> findById(String id);
     Mono<Voter> save(Voter voter);
     Mono<VotingDetail> saveElectoralVote(VotingDetail votingDetail);

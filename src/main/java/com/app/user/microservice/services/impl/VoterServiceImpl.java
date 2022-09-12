@@ -5,6 +5,7 @@ import com.app.user.microservice.entities.Voter;
 import com.app.user.microservice.entities.models.VotingDetail;
 import com.app.user.microservice.repositories.VoterRepository;
 import com.app.user.microservice.services.VoterService;
+import com.app.user.microservice.utils.DateComparison;
 import com.app.user.microservice.utils.Groups;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -16,17 +17,21 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Date;
+
 
 @Service
 public class VoterServiceImpl implements VoterService {
 
     private final VoterRepository voterRepository;
+    private final DateComparison dateComparison;
     private final Groups groups;
     private final WebClient webClientElectronicVote;
 
-    public VoterServiceImpl(VoterRepository voterRepository, Groups groups, WebClient.Builder webClientElectronicVote,
+    public VoterServiceImpl(VoterRepository voterRepository, DateComparison dateComparison, Groups groups, WebClient.Builder webClientElectronicVote,
                             @Value("${electronic.vote}") String electronicVote){
         this.voterRepository = voterRepository;
+        this.dateComparison = dateComparison;
         this.groups = groups;
         this.webClientElectronicVote = webClientElectronicVote.baseUrl(electronicVote).build();
     }
@@ -54,6 +59,12 @@ public class VoterServiceImpl implements VoterService {
     }
 
     @Override
+    public Mono<Voter> findByDniAndDate(String dni, Date birthDate,Date emissionDate) {
+        return voterRepository.findByDniAndBirthDateBetweenAndEmissionDateBetween(dni,dateComparison.minusDays(birthDate),birthDate,
+                dateComparison.minusDays(emissionDate),emissionDate);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Mono<Voter> findById(String id){
         return voterRepository.findById(id);
@@ -78,6 +89,7 @@ public class VoterServiceImpl implements VoterService {
             result.setName(voter.getName());
             result.setLastName(voter.getLastName());
             result.setEmail(voter.getEmail());
+            result.setEmissionDate(voter.getEmissionDate());
             result.setDni(voter.getDni());
             result.setGender(voter.getGender());
             return voterRepository.save(result);

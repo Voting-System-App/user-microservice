@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
 
 @RestController
@@ -39,6 +41,10 @@ public class VoterController {
     @GetMapping("/{id}")
     public Mono<ResponseEntity<Voter>> findById(@PathVariable String id){
         return voterService.findById(id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+    @GetMapping("/dni/{dni}/birth/{birthDate}/emission/{emissionDate}")
+    public Mono<ResponseEntity<Voter>> findById(@PathVariable String dni, @PathVariable @DateTimeFormat(pattern = "dd-MM-yyyy") Date birthDate, @PathVariable @DateTimeFormat(pattern = "dd-MM-yyyy") Date emissionDate){
+        return voterService.findByDniAndDate(dni,birthDate,emissionDate).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
     @PostMapping
     public ResponseEntity<Mono<Voter>> saveVoter(@RequestBody Voter voter){

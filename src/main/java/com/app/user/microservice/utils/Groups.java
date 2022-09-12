@@ -5,18 +5,35 @@ import org.springframework.stereotype.Component;
 @Component
 public class Groups {
     public String assignGroup(String dni){
-        String group = switch (dni) {
-            case "1" -> "A";
-            case "2" -> "B";
-            case "3" -> "C";
-            case "4" -> "D";
-            case "5" -> "E";
-            case "6" -> "F";
-            case "7" -> "G";
-            case "8" -> "H";
-            case "9" -> "I";
-            default -> "J";
-        };
-        return group;
+        if(dni.equals("1")){
+            return "A";
+        }
+        if(dni.equals("2")){
+            return "B";
+        }
+        if(dni.equals("3")){
+            return "C";
+        }
+        if(dni.equals("4")){
+            return "D";
+        }
+        if(dni.equals("5")){
+            return "E";
+        }
+        if(dni.equals("6")){
+            return "F";
+        }
+        if(dni.equals("7")){
+            return "G";
+        }
+        if(dni.equals("8")){
+            return "H";
+        }
+        if(dni.equals("9")){
+            return "I";
+        }
+        else {
+            return "J";
+        }
     }
 }

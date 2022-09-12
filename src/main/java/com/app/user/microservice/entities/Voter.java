@@ -1,11 +1,9 @@
 package com.app.user.microservice.entities;
 
 
-import com.app.user.microservice.entities.models.VotingGroup;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -33,6 +31,8 @@ public class Voter {
     private String gender;
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date birthDate;
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private Date emissionDate;
     @Field(name = "is_active")
     @Enumerated(EnumType.STRING)
     private Status isActive;
