@@ -17,4 +17,5 @@ public interface VoterService {
     Mono<Voter> save(Voter voter);
     Mono<VotingDetail> saveElectoralVote(VotingDetail votingDetail);
     Mono<Voter> update(Voter voter,String id);
+    Mono<Boolean> groupStatus(String name);
 }

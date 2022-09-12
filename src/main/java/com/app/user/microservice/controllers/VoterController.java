@@ -53,5 +53,8 @@ public class VoterController {
     public Mono<ResponseEntity<Voter>> update(@RequestBody Voter voter ,@PathVariable String id){
         return voterService.update(voter,id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
-
+    @GetMapping("/group/status/{name}")
+    public Mono<Boolean> findGroupStatus(@PathVariable String name){
+        return voterService.groupStatus(name);
+    }
 }

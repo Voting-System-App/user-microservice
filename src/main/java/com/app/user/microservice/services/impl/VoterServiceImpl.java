@@ -35,6 +35,10 @@ public class VoterServiceImpl implements VoterService {
                 body(Mono.just(votingDetail), VotingDetail.class).
                 retrieve().bodyToMono(VotingDetail.class);
     }
+    private Mono<Boolean> viewStatusGroup(String name) {
+        return webClientElectronicVote.get().uri("/voting/group/"+ name +"/status").
+                retrieve().bodyToMono(Boolean.class);
+    }
     @Override
     @Transactional(readOnly = true)
     public Flux<Voter> findAll() {
@@ -78,5 +82,10 @@ public class VoterServiceImpl implements VoterService {
             result.setGender(voter.getGender());
             return voterRepository.save(result);
         });
+    }
+
+    @Override
+    public Mono<Boolean> groupStatus(String name) {
+        return viewStatusGroup(name);
     }
 }
