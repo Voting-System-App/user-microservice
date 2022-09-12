@@ -2,7 +2,6 @@ package com.app.user.microservice.controllers;
 
 import com.app.user.microservice.entities.VotingManager;
 import com.app.user.microservice.entities.models.Voting;
-import com.app.user.microservice.entities.models.VotingDate;
 import com.app.user.microservice.services.VotingManagerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;

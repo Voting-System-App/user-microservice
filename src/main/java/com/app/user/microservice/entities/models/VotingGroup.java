@@ -9,5 +9,4 @@ public class VotingGroup {
     private String name;
     private String time;
     private Boolean isActive;
-    private VotingDate votingDate;
 }

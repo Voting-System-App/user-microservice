@@ -2,7 +2,6 @@ package com.app.user.microservice.services;
 
 import com.app.user.microservice.entities.VotingManager;
 import com.app.user.microservice.entities.models.Voting;
-import com.app.user.microservice.entities.models.VotingDate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
