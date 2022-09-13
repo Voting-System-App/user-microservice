@@ -2,6 +2,7 @@ package com.app.user.microservice.controllers;
 
 import com.app.user.microservice.entities.VotingManager;
 import com.app.user.microservice.entities.models.Voting;
+import com.app.user.microservice.entities.models.VotingStatus;
 import com.app.user.microservice.services.VotingManagerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +21,16 @@ public class VotingManagerController {
     public VotingManagerController(VotingManagerService votingManagerService) {
         this.votingManagerService = votingManagerService;
     }
-
+    @GetMapping("/voting/status/{status}")
+    public Flux<Voting> findByVotingStatus(@PathVariable VotingStatus status){
+        return votingManagerService.findAllVotingByStatus(status);
+    }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public Flux<VotingManager> findAll(){
         return votingManagerService.findAll();
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/voting")
     public Flux<Voting> findAllElectoralVoting(){
         return votingManagerService.findAllElectoralVoting();
@@ -35,11 +40,11 @@ public class VotingManagerController {
     public Mono<ResponseEntity<VotingManager>> findById(@PathVariable String id){
         return votingManagerService.findById(id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
-
     @PostMapping
     public ResponseEntity<Mono<VotingManager>> saveManager(@RequestBody VotingManager manager){
         return ResponseEntity.ok(votingManagerService.save(manager));
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/voting")
     public Mono<Voting> saveVotingDateByGroups(@RequestBody Voting voting){
         return votingManagerService.saveVoting(voting);

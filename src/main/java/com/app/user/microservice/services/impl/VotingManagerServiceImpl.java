@@ -2,6 +2,7 @@ package com.app.user.microservice.services.impl;
 
 import com.app.user.microservice.entities.VotingManager;
 import com.app.user.microservice.entities.models.Voting;
+import com.app.user.microservice.entities.models.VotingStatus;
 import com.app.user.microservice.repositories.VoterRepository;
 import com.app.user.microservice.repositories.VotingManagerRepository;
 import com.app.user.microservice.services.VotingManagerService;
@@ -26,6 +27,10 @@ public class VotingManagerServiceImpl implements VotingManagerService {
     }
     private Flux<Voting> findAllVoting() {
         return webClientElectronicVote.get().uri("/voting").
+                retrieve().bodyToFlux(Voting.class);
+    }
+    private Flux<Voting> findVotingByStatus(VotingStatus status) {
+        return webClientElectronicVote.get().uri("/voting/status/"+status).
                 retrieve().bodyToFlux(Voting.class);
     }
     private Mono<Long> findAllByElectoralVotingId(String id) {
@@ -61,6 +66,11 @@ public class VotingManagerServiceImpl implements VotingManagerService {
     @Override
     public Flux<VotingManager> findAll() {
         return votingManagerRepository.findAll();
+    }
+
+    @Override
+    public Flux<Voting> findAllVotingByStatus(VotingStatus votingStatus) {
+        return findVotingByStatus(votingStatus);
     }
 
     @Override

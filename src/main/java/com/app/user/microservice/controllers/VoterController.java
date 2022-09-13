@@ -2,6 +2,7 @@ package com.app.user.microservice.controllers;
 
 import com.app.user.microservice.entities.Voter;
 import com.app.user.microservice.entities.models.VotingDetail;
+import com.app.user.microservice.entities.models.VotingGroup;
 import com.app.user.microservice.services.VoterService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,11 @@ public class VoterController {
         Flux<Voter> voters = voterService.findAll();
         return ResponseEntity.ok(voters);
     }
+    @GetMapping("/groups")
+    public ResponseEntity<Flux<VotingGroup>> findAllGroupData(){
+        Flux<VotingGroup> groups = voterService.findAllGroups();
+        return ResponseEntity.ok(groups);
+    }
     @GetMapping("/all")
     public Mono<Page<Voter>> findAllByPage(@RequestParam("page") int page, @RequestParam("size") int size){
         return voterService.findAllVotersByPage(PageRequest.of(page, size));
@@ -43,7 +49,7 @@ public class VoterController {
         return voterService.findById(id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
     @GetMapping("/dni/{dni}/birth/{birthDate}/emission/{emissionDate}")
-    public Mono<ResponseEntity<Voter>> findById(@PathVariable String dni, @PathVariable @DateTimeFormat(pattern = "dd-MM-yyyy") Date birthDate, @PathVariable @DateTimeFormat(pattern = "dd-MM-yyyy") Date emissionDate){
+    public Mono<ResponseEntity<Voter>> findByDniData(@PathVariable String dni, @PathVariable @DateTimeFormat(pattern = "dd-MM-yyyy") Date birthDate, @PathVariable @DateTimeFormat(pattern = "dd-MM-yyyy") Date emissionDate){
         return voterService.findByDniAndDate(dni,birthDate,emissionDate).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
     @PostMapping

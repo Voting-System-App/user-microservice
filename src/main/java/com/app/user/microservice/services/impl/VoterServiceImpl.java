@@ -3,6 +3,7 @@ package com.app.user.microservice.services.impl;
 import com.app.user.microservice.entities.Status;
 import com.app.user.microservice.entities.Voter;
 import com.app.user.microservice.entities.models.VotingDetail;
+import com.app.user.microservice.entities.models.VotingGroup;
 import com.app.user.microservice.repositories.VoterRepository;
 import com.app.user.microservice.services.VoterService;
 import com.app.user.microservice.utils.DateComparison;
@@ -35,6 +36,10 @@ public class VoterServiceImpl implements VoterService {
         this.groups = groups;
         this.webClientElectronicVote = webClientElectronicVote.baseUrl(electronicVote).build();
     }
+    private Flux<VotingGroup> findAllGroupData(){
+        return webClientElectronicVote.get().uri("/voting/groups").
+                retrieve().bodyToFlux(VotingGroup.class);
+    }
     private Mono<VotingDetail> createElectoralVote(VotingDetail votingDetail) {
         return webClientElectronicVote.post().uri("/vote/detail").
                 body(Mono.just(votingDetail), VotingDetail.class).
@@ -48,6 +53,11 @@ public class VoterServiceImpl implements VoterService {
     @Transactional(readOnly = true)
     public Flux<Voter> findAll() {
         return voterRepository.findAll();
+    }
+
+    @Override
+    public Flux<VotingGroup> findAllGroups() {
+        return findAllGroupData();
     }
 
     @Override

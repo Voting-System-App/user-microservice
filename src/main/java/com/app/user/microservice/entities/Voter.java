@@ -28,7 +28,7 @@ public class Voter {
     private String email;
     @Size(min = 8,max =8)
     private String dni;
-    private String gender;
+    private Boolean gender;
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date birthDate;
     @JsonFormat(pattern = "dd-MM-yyyy")
