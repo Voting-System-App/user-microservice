@@ -29,16 +29,23 @@ public class VoterServiceImpl implements VoterService {
     private final Groups groups;
     private final WebClient webClientElectronicVote;
 
+    private final WebClient webClientFinger;
+
     public VoterServiceImpl(VoterRepository voterRepository, DateComparison dateComparison, Groups groups, WebClient.Builder webClientElectronicVote,
-                            @Value("${electronic.vote}") String electronicVote){
+                            @Value("${electronic.vote}") String electronicVote,@Value("${finger.reader}") String reader ,WebClient.Builder webClientFinger){
         this.voterRepository = voterRepository;
         this.dateComparison = dateComparison;
         this.groups = groups;
+        this.webClientFinger = webClientFinger.baseUrl(reader).build();
         this.webClientElectronicVote = webClientElectronicVote.baseUrl(electronicVote).build();
     }
     private Flux<VotingGroup> findAllGroupData(){
         return webClientElectronicVote.get().uri("/voting/groups").
                 retrieve().bodyToFlux(VotingGroup.class);
+    }
+    private Mono<Boolean> saveFingerPrint(String fileName){
+        return webClientFinger.get().uri("/s3/"+fileName+"/validate/"+false)
+                .retrieve().bodyToMono(Boolean.class);
     }
     private Mono<VotingDetail> createElectoralVote(VotingDetail votingDetail) {
         return webClientElectronicVote.post().uri("/vote/detail").
@@ -84,7 +91,10 @@ public class VoterServiceImpl implements VoterService {
     public Mono<Voter> save(Voter voter) {
         voter.setIsActive(Status.ACTIVE);
         voter.setGroup(groups.assignGroup(voter.getDni()));
-        return voterRepository.save(voter);
+        return saveFingerPrint(voter.getDni()).flatMap(result->{
+            voter.setFingerPrint("https://printreader.s3.sa-east-1.amazonaws.com/"+voter.getDni());
+            return result ?voterRepository.save(voter):Mono.just(new Voter());
+        });
     }
 
     @Override
