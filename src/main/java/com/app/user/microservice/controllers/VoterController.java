@@ -1,6 +1,7 @@
 package com.app.user.microservice.controllers;
 
 import com.app.user.microservice.entities.Voter;
+import com.app.user.microservice.entities.models.Voting;
 import com.app.user.microservice.entities.models.VotingDetail;
 import com.app.user.microservice.entities.models.VotingGroup;
 import com.app.user.microservice.services.VoterService;
@@ -47,6 +48,10 @@ public class VoterController {
     @GetMapping("/{id}")
     public Mono<ResponseEntity<Voter>> findById(@PathVariable String id){
         return voterService.findById(id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+    @GetMapping("/voting/{id}")
+    public Mono<ResponseEntity<Voting>> findByVotingId(@PathVariable String id){
+        return voterService.findByVotingId(id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
     @GetMapping("/dni/{dni}/birth/{birthDate}/emission/{emissionDate}")
     public Mono<ResponseEntity<Voter>> findByDniData(@PathVariable String dni, @PathVariable @DateTimeFormat(pattern = "dd-MM-yyyy") Date birthDate, @PathVariable @DateTimeFormat(pattern = "dd-MM-yyyy") Date emissionDate){

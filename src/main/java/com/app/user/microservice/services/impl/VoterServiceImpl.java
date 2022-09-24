@@ -2,6 +2,7 @@ package com.app.user.microservice.services.impl;
 
 import com.app.user.microservice.entities.Status;
 import com.app.user.microservice.entities.Voter;
+import com.app.user.microservice.entities.models.Voting;
 import com.app.user.microservice.entities.models.VotingDetail;
 import com.app.user.microservice.entities.models.VotingGroup;
 import com.app.user.microservice.repositories.VoterRepository;
@@ -56,6 +57,10 @@ public class VoterServiceImpl implements VoterService {
         return webClientElectronicVote.get().uri("/voting/group/"+ name +"/status").
                 retrieve().bodyToMono(Boolean.class);
     }
+    private Mono<Voting> findByVotingIdView(String id) {
+        return webClientElectronicVote.get().uri("/voting/"+ id).
+                retrieve().bodyToMono(Voting.class);
+    }
     @Override
     @Transactional(readOnly = true)
     public Flux<Voter> findAll() {
@@ -65,6 +70,11 @@ public class VoterServiceImpl implements VoterService {
     @Override
     public Flux<VotingGroup> findAllGroups() {
         return findAllGroupData();
+    }
+
+    @Override
+    public Mono<Voting> findByVotingId(String id) {
+        return findByVotingIdView(id);
     }
 
     @Override
