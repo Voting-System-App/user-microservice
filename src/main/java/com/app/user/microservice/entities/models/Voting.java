@@ -15,5 +15,6 @@ public class Voting {
     private VotingStatus votingStatus;
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date date;
+    private String city;
     private Boolean isActive;
 }

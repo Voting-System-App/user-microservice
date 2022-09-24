@@ -4,6 +4,7 @@ import com.app.user.microservice.entities.Voter;
 import com.app.user.microservice.entities.models.Voting;
 import com.app.user.microservice.entities.models.VotingDetail;
 import com.app.user.microservice.entities.models.VotingGroup;
+import com.app.user.microservice.entities.models.VotingStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.multipart.FilePart;
@@ -15,6 +16,7 @@ import java.util.Date;
 
 public interface VoterService {
     Flux<Voter> findAll();
+    Flux<Voting> findAllByCityAndStatus(String city, VotingStatus votingStatus);
     Flux<VotingGroup> findAllGroups();
     Mono<Voting> findByVotingId(String id);
     Mono<Page<Voter>> findAllVotersByPage(Pageable pageable);
