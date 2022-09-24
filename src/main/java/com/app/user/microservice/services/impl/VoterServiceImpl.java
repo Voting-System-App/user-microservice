@@ -76,8 +76,10 @@ public class VoterServiceImpl implements VoterService {
 
     @Override
     public Mono<Voter> findByDniAndDate(String dni, Date birthDate,Date emissionDate) {
-        return voterRepository.findByDniAndBirthDateBetweenAndEmissionDateBetween(dni,dateComparison.minusDays(birthDate),birthDate,
-                dateComparison.minusDays(emissionDate),emissionDate);
+        System.out.println(dateComparison.minusDays(birthDate));
+        System.out.println(dateComparison.equal(birthDate));
+        return voterRepository.findByDniAndBirthDateBetweenAndEmissionDateBetween(dni,dateComparison.minusDays(birthDate),dateComparison.equal(birthDate),
+                dateComparison.minusDays(emissionDate),dateComparison.equal(emissionDate));
     }
 
     @Override
