@@ -1,8 +1,10 @@
 package com.app.user.microservice.controllers;
 
 import com.app.user.microservice.entities.Voter;
+import com.app.user.microservice.entities.models.Voting;
 import com.app.user.microservice.entities.models.VotingDetail;
 import com.app.user.microservice.entities.models.VotingGroup;
+import com.app.user.microservice.entities.models.VotingStatus;
 import com.app.user.microservice.services.VoterService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +40,11 @@ public class VoterController {
     @GetMapping("/groups")
     public ResponseEntity<Flux<VotingGroup>> findAllGroupData(){
         Flux<VotingGroup> groups = voterService.findAllGroups();
+        return ResponseEntity.ok(groups);
+    }
+    @GetMapping("/voting/city/{city}/status/{status}")
+    public ResponseEntity<Flux<Voting>> findAllByCityAndStatus(@PathVariable String city,@PathVariable VotingStatus status){
+        Flux<Voting> groups = voterService.findAllByCityAndStatus(city, status);
         return ResponseEntity.ok(groups);
     }
     @GetMapping("/all")

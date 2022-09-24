@@ -67,7 +67,6 @@ public class VotingManagerServiceImpl implements VotingManagerService {
     public Flux<VotingManager> findAll() {
         return votingManagerRepository.findAll();
     }
-
     @Override
     public Flux<Voting> findAllVotingByStatus(VotingStatus votingStatus) {
         return findVotingByStatus(votingStatus);

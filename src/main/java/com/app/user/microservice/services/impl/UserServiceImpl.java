@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
         user.setEnabled(true);
         user.setRoles(List.of(role));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        return userRepository.findByUsername(user.getUsername()).hasElement().flatMap(result-> result?Mono.just(new User()):userRepository.save(user));
     }
 
     @Transactional

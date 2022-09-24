@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ public class User implements UserDetails{
     private Boolean enabled;
     @Email
     private String email;
-    private List<Role> roles;
+    private List<Role> roles=new ArrayList<>();
 
     private static final long serialVersionUID = 4110570539416850727L;
     @Override

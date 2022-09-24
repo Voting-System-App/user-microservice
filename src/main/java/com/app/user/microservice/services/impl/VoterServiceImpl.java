@@ -2,8 +2,10 @@ package com.app.user.microservice.services.impl;
 
 import com.app.user.microservice.entities.Status;
 import com.app.user.microservice.entities.Voter;
+import com.app.user.microservice.entities.models.Voting;
 import com.app.user.microservice.entities.models.VotingDetail;
 import com.app.user.microservice.entities.models.VotingGroup;
+import com.app.user.microservice.entities.models.VotingStatus;
 import com.app.user.microservice.repositories.VoterRepository;
 import com.app.user.microservice.services.VoterService;
 import com.app.user.microservice.utils.DateComparison;
@@ -29,23 +31,16 @@ public class VoterServiceImpl implements VoterService {
     private final Groups groups;
     private final WebClient webClientElectronicVote;
 
-    private final WebClient webClientFinger;
-
     public VoterServiceImpl(VoterRepository voterRepository, DateComparison dateComparison, Groups groups, WebClient.Builder webClientElectronicVote,
-                            @Value("${electronic.vote}") String electronicVote,@Value("${finger.reader}") String reader ,WebClient.Builder webClientFinger){
+                            @Value("${electronic.vote}") String electronicVote){
         this.voterRepository = voterRepository;
         this.dateComparison = dateComparison;
         this.groups = groups;
-        this.webClientFinger = webClientFinger.baseUrl(reader).build();
         this.webClientElectronicVote = webClientElectronicVote.baseUrl(electronicVote).build();
     }
     private Flux<VotingGroup> findAllGroupData(){
         return webClientElectronicVote.get().uri("/voting/groups").
                 retrieve().bodyToFlux(VotingGroup.class);
-    }
-    private Mono<Boolean> saveFingerPrint(String fileName){
-        return webClientFinger.get().uri("/s3/"+fileName+"/validate/"+false)
-                .retrieve().bodyToMono(Boolean.class);
     }
     private Mono<VotingDetail> createElectoralVote(VotingDetail votingDetail) {
         return webClientElectronicVote.post().uri("/vote/detail").
@@ -55,6 +50,10 @@ public class VoterServiceImpl implements VoterService {
     private Mono<Boolean> viewStatusGroup(String name) {
         return webClientElectronicVote.get().uri("/voting/group/"+ name +"/status").
                 retrieve().bodyToMono(Boolean.class);
+    }
+    private Flux<Voting> findAllByCityStatus(String city, VotingStatus status){
+        return webClientElectronicVote.get().uri("/voting/city/"+city+"/status/"+status).
+                retrieve().bodyToFlux(Voting.class);
     }
     @Override
     @Transactional(readOnly = true)
@@ -91,12 +90,13 @@ public class VoterServiceImpl implements VoterService {
     public Mono<Voter> save(Voter voter) {
         voter.setIsActive(Status.ACTIVE);
         voter.setGroup(groups.assignGroup(voter.getDni()));
-        return saveFingerPrint(voter.getDni()).flatMap(result->{
-            voter.setFingerPrint("https://printreader.s3.sa-east-1.amazonaws.com/"+voter.getDni());
-            return result ?voterRepository.save(voter):Mono.just(new Voter());
-        });
+        voter.setFingerPrint("https://fingerread.s3.sa-east-1.amazonaws.com/"+voter.getDni());
+        return voterRepository.save(voter);
     }
-
+    @Override
+    public Flux<Voting> findAllByCityAndStatus(String city, VotingStatus votingStatus) {
+        return findAllByCityStatus(city, votingStatus);
+    }
     @Override
     public Mono<VotingDetail> saveElectoralVote(VotingDetail votingDetail) {
         return createElectoralVote(votingDetail);
