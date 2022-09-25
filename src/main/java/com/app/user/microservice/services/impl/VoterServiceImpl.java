@@ -51,15 +51,13 @@ public class VoterServiceImpl implements VoterService {
         return webClientElectronicVote.get().uri("/voting/group/"+ name +"/status").
                 retrieve().bodyToMono(Boolean.class);
     }
-<<<<<<< HEAD
     private Mono<Voting> findByVotingIdView(String id) {
         return webClientElectronicVote.get().uri("/voting/"+ id).
                 retrieve().bodyToMono(Voting.class);
-=======
+    }
     private Flux<Voting> findAllByCityStatus(String city, VotingStatus status){
         return webClientElectronicVote.get().uri("/voting/city/"+city+"/status/"+status).
                 retrieve().bodyToFlux(Voting.class);
->>>>>>> ef946e6971bd2c9fa84c625ff872bce55023ea86
     }
     @Override
     @Transactional(readOnly = true)
