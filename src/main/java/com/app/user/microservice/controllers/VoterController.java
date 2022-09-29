@@ -47,6 +47,11 @@ public class VoterController {
         Flux<Voting> groups = voterService.findAllByCityAndStatus(city, status);
         return ResponseEntity.ok(groups);
     }
+    @GetMapping("/voting/city/{city}/status/{status}/voter/{id}")
+    public ResponseEntity<Flux<Voting>> findAllByCityAndStatus(@PathVariable String city,@PathVariable VotingStatus status,@PathVariable String id){
+        Flux<Voting> groups = voterService.findAllByCityAndStatusAndVoter(city, status, id);
+        return ResponseEntity.ok(groups);
+    }
     @GetMapping("/all")
     public Mono<Page<Voter>> findAllByPage(@RequestParam("page") int page, @RequestParam("size") int size){
         return voterService.findAllVotersByPage(PageRequest.of(page, size));

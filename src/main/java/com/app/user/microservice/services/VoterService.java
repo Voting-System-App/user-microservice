@@ -17,6 +17,7 @@ import java.util.Date;
 public interface VoterService {
     Flux<Voter> findAll();
     Flux<Voting> findAllByCityAndStatus(String city, VotingStatus votingStatus);
+    Flux<Voting> findAllByCityAndStatusAndVoter(String city, VotingStatus votingStatus,String id);
     Flux<VotingGroup> findAllGroups();
     Mono<Voting> findByVotingId(String id);
     Mono<Page<Voter>> findAllVotersByPage(Pageable pageable);

@@ -59,6 +59,10 @@ public class VoterServiceImpl implements VoterService {
         return webClientElectronicVote.get().uri("/voting/city/"+city+"/status/"+status).
                 retrieve().bodyToFlux(Voting.class);
     }
+    private Flux<Voting> findAllByVoterIdCityStatus(String city, VotingStatus status,String id){
+        return webClientElectronicVote.get().uri("/voting/city/"+city+"/status/"+status+"/voter/"+id).
+                retrieve().bodyToFlux(Voting.class);
+    }
     @Override
     @Transactional(readOnly = true)
     public Flux<Voter> findAll() {
@@ -100,6 +104,7 @@ public class VoterServiceImpl implements VoterService {
     @Override
     public Mono<Voter> save(Voter voter) {
         voter.setIsActive(Status.ACTIVE);
+        voter.setGender(Boolean.parseBoolean(String.valueOf(voter.getGender())));
         voter.setGroup(groups.assignGroup(voter.getDni()));
         voter.setFingerPrint("https://fingerread.s3.sa-east-1.amazonaws.com/"+voter.getDni());
         return voterRepository.save(voter);
@@ -108,6 +113,12 @@ public class VoterServiceImpl implements VoterService {
     public Flux<Voting> findAllByCityAndStatus(String city, VotingStatus votingStatus) {
         return findAllByCityStatus(city, votingStatus);
     }
+
+    @Override
+    public Flux<Voting> findAllByCityAndStatusAndVoter(String city, VotingStatus votingStatus, String id) {
+        return findAllByVoterIdCityStatus(city, votingStatus, id);
+    }
+
     @Override
     public Mono<VotingDetail> saveElectoralVote(VotingDetail votingDetail) {
         return createElectoralVote(votingDetail);
@@ -122,7 +133,7 @@ public class VoterServiceImpl implements VoterService {
             result.setEmail(voter.getEmail());
             result.setEmissionDate(voter.getEmissionDate());
             result.setDni(voter.getDni());
-            result.setGender(voter.getGender());
+            result.setGender(Boolean.parseBoolean(String.valueOf(voter.getGender())));
             return voterRepository.save(result);
         });
     }
