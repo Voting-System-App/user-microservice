@@ -7,15 +7,16 @@ import com.app.user.microservice.entities.models.VotingGroup;
 import com.app.user.microservice.entities.models.VotingStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.codec.multipart.FilePart;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.util.Date;
 
 public interface VoterService {
     Flux<Voter> findAll();
+    Mono<Long> findTotalVoters();
+    Flux<Voter> findByDni(String dni);
+    Flux<Voter> findByName(String name);
     Flux<Voting> findAllByCityAndStatus(String city, VotingStatus votingStatus);
     Flux<Voting> findAllByCityAndStatusAndVoter(String city, VotingStatus votingStatus,String id);
     Flux<VotingGroup> findAllGroups();

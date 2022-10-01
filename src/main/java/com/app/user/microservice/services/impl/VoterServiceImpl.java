@@ -70,16 +70,36 @@ public class VoterServiceImpl implements VoterService {
     }
 
     @Override
+    public Mono<Long> findTotalVoters() {
+        return voterRepository.findAll().count();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Flux<Voter> findByDni(String dni) {
+        return voterRepository.findByDniIsContaining(dni);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Flux<Voter> findByName(String name) {
+        return voterRepository.findByNameIsContainingIgnoreCase(name);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Flux<VotingGroup> findAllGroups() {
         return findAllGroupData();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Mono<Voting> findByVotingId(String id) {
         return findByVotingIdView(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Mono<Page<Voter>> findAllVotersByPage(Pageable pageable) {
         return voterRepository.findAllBy(pageable)
                 .collectList()
@@ -88,6 +108,7 @@ public class VoterServiceImpl implements VoterService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Mono<Voter> findByDniAndDate(String dni, Date birthDate,Date emissionDate) {
         System.out.println(dateComparison.minusDays(birthDate));
         System.out.println(dateComparison.equal(birthDate));
@@ -110,11 +131,13 @@ public class VoterServiceImpl implements VoterService {
         return voterRepository.save(voter);
     }
     @Override
+    @Transactional(readOnly = true)
     public Flux<Voting> findAllByCityAndStatus(String city, VotingStatus votingStatus) {
         return findAllByCityStatus(city, votingStatus);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Flux<Voting> findAllByCityAndStatusAndVoter(String city, VotingStatus votingStatus, String id) {
         return findAllByVoterIdCityStatus(city, votingStatus, id);
     }
@@ -131,6 +154,7 @@ public class VoterServiceImpl implements VoterService {
             result.setName(voter.getName());
             result.setLastName(voter.getLastName());
             result.setEmail(voter.getEmail());
+            result.setBirthDate(voter.getBirthDate());
             result.setEmissionDate(voter.getEmissionDate());
             result.setDni(voter.getDni());
             result.setGender(Boolean.parseBoolean(String.valueOf(voter.getGender())));

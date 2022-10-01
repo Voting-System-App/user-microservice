@@ -13,4 +13,6 @@ import java.util.Date;
 public interface VoterRepository extends ReactiveMongoRepository<Voter,String> {
     Flux<Voter> findAllBy(Pageable pageable);
     Mono<Voter> findByDniAndBirthDateBetweenAndEmissionDateBetween(String dni, Date startBirthDate,Date endBirthDate,Date startEmissionDate,Date endEmissionDate);
+    Flux<Voter> findByDniIsContaining(String dni);
+    Flux<Voter> findByNameIsContainingIgnoreCase(String name);
 }

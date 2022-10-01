@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,10 +38,24 @@ public class VoterController {
         Flux<Voter> voters = voterService.findAll();
         return ResponseEntity.ok(voters);
     }
+    @GetMapping("/total")
+    public Mono<Long> findAllTotalVoters(){
+        return voterService.findTotalVoters();
+    }
     @GetMapping("/groups")
     public ResponseEntity<Flux<VotingGroup>> findAllGroupData(){
         Flux<VotingGroup> groups = voterService.findAllGroups();
         return ResponseEntity.ok(groups);
+    }
+    @GetMapping("/dni/{dni}")
+    public ResponseEntity<Flux<Voter>> findAllByDni(@PathVariable String dni){
+        Flux<Voter> voters = voterService.findByDni(dni);
+        return ResponseEntity.ok(voters);
+    }
+    @GetMapping("/name/{name}")
+    public ResponseEntity<Flux<Voter>> findAllByName(@PathVariable String name){
+        Flux<Voter> voters = voterService.findByName(name);
+        return ResponseEntity.ok(voters);
     }
     @GetMapping("/voting/city/{city}/status/{status}")
     public ResponseEntity<Flux<Voting>> findAllByCityAndStatus(@PathVariable String city,@PathVariable VotingStatus status){
