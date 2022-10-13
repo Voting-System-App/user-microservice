@@ -155,6 +155,7 @@ public class VoterServiceImpl implements VoterService {
             result.setLastName(voter.getLastName());
             result.setEmail(voter.getEmail());
             result.setBirthDate(voter.getBirthDate());
+            result.setCity(voter.getCity());
             result.setEmissionDate(voter.getEmissionDate());
             result.setDni(voter.getDni());
             result.setGender(Boolean.parseBoolean(String.valueOf(voter.getGender())));
